@@ -1,11 +1,13 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { BrainCircuit, Compass, Target, Sparkles, LogIn } from 'lucide-react';
+import { BrainCircuit, Compass, Target, Sparkles, LogIn, Award } from 'lucide-react';
 import { loginWithGoogle } from '../lib/firebase';
 import { AdminPanel } from './AdminPanel';
+import { Onboarding } from './Onboarding';
+import { TasksWidget } from './TasksWidget';
 
 export function Dashboard() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   if (!user) {
     return (
@@ -32,12 +34,20 @@ export function Dashboard() {
     );
   }
 
+  // If user is logged in but hasn't completed onboarding, show Questionnaire
+  if (profile && profile.role && profile.onboardingCompleted !== true) {
+    return <Onboarding />;
+  }
+
   // MOCK DATA for MVP view, replacing soon.
   const stats = [
-    { label: "משימות יומיות", value: "3/5", icon: Target, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "ניסיון שנצבר (XP)", value: (profile?.xp || 0).toLocaleString() , icon: Award, color: "text-amber-600", bg: "bg-amber-50" },
     { label: "עבודה עמוקה", value: "25 דק'", icon: BrainCircuit, color: "text-purple-600", bg: "bg-purple-50" },
     { label: "כיוון שבועי", value: "+12%", icon: Compass, color: "text-blue-600", bg: "bg-blue-50" },
   ];
+
+  // Dynamic Levels from Firebase 
+  const levels = profile?.levels || { body: 1, mind: 1, money: 1, spirit: 1 };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -65,23 +75,9 @@ export function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Core System Mock for future logic */}
-        <section className="bg-white p-6 rounded-2xl border shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1 h-full bg-blue-500" />
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Target className="w-5 h-5 text-blue-600" /> 
-            הצעת מנוע צמיחה (AI)
-          </h2>
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-blue-900">
-            <p className="font-medium mb-2">זיהוי דפוס: אתה חלש במיקוד השבוע.</p>
-            <p className="text-sm opacity-90 mb-4">
-              מזהה ירידה ברמת ההתמדה בתחום "השכל/למידה". המלצה: החלפת יעד יומי ל-25 דקות של למידה ממוקדת ללא הסחות דעת, ואחריה תרגיל נשימה.
-            </p>
-            <button className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-              קבל משימה עכשיו
-            </button>
-          </div>
-        </section>
+        
+        {/* Core System Task List using Real Firebase Data */}
+        <TasksWidget />
 
         <section className="bg-white p-6 rounded-2xl border shadow-sm relative">
            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -91,15 +87,19 @@ export function Dashboard() {
           <div className="space-y-3">
              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <span className="font-medium text-slate-700">🧠 שכל / למידה</span>
-                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה 4</span>
+                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה {levels.mind}</span>
              </div>
              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <span className="font-medium text-slate-700">💰 כסף / עסקים</span>
-                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה 2</span>
+                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה {levels.money}</span>
              </div>
              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <span className="font-medium text-slate-700">🏃‍♂️ גוף ובריאות</span>
-                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה 5</span>
+                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה {levels.body}</span>
+             </div>
+             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <span className="font-medium text-slate-700">🕊️ רוחניות ואמונה</span>
+                <span className="text-xs bg-slate-200 px-2 py-1 rounded font-bold">רמה {levels.spirit}</span>
              </div>
           </div>
         </section>

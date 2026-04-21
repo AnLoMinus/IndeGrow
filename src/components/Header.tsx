@@ -20,7 +20,7 @@ export function Header() {
         <div className="flex flex-col items-start leading-none group cursor-pointer" onClick={() => setChangelogOpen(true)}>
           <span className="font-bold text-xl tracking-tight text-blue-700">IndeGrow OS</span>
           <div className="flex flex-row items-center gap-1 mt-1 bg-blue-100 text-blue-800 text-[10px] font-semibold px-1.5 py-0.5 rounded transition-colors group-hover:bg-blue-200">
-            <span>גרסה 0.0.2</span>
+            <span>גרסה 0.0.3</span>
           </div>
         </div>
 

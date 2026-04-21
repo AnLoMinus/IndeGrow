@@ -12,7 +12,11 @@
         "tokenBalance": { "type": "number", "description": "Remaining tokens" },
         "isOnline": { "type": "boolean" },
         "lastActive": { "type": "string", "format": "date-time" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "createdAt": { "type": "string", "format": "date-time" },
+        "onboardingCompleted": { "type": "boolean" },
+        "onboardingData": { "type": "object" },
+        "levels": { "type": "object" },
+        "xp": { "type": "number", "description": "Experience points" }
       },
       "required": ["email", "role", "tokenBalance", "createdAt"]
     },

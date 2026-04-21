@@ -16,12 +16,19 @@ service cloud.firestore {
 
     match /users/{userId} {
       function isValidUser(data) {
-        return data.size() >= 4 
+        let baseValid = data.size() >= 4 
           && data.keys().hasAll(['email', 'role', 'tokenBalance', 'createdAt'])
           && data.email is string && data.email.size() <= 256
           && data.role in ['user', 'admin']
           && data.tokenBalance is number
           && data.createdAt is string;
+        
+        let validOnboarding = !('onboardingCompleted' in data) || data.onboardingCompleted is bool;
+        let validLevels = !('levels' in data) || data.levels is map;
+        let validOnboardingData = !('onboardingData' in data) || data.onboardingData is map;
+        let validXP = !('xp' in data) || data.xp is number;
+
+        return baseValid && validOnboarding && validLevels && validOnboardingData && validXP;
       }
       allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
       allow list: if isAdmin();

@@ -8,7 +8,9 @@ export const auth = getAuth(app);
 
 // Initialize Firestore with experimentalForceLongPolling to fix connection issues in sandboxed environments
 export const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true
+  experimentalForceLongPolling: true,
+  // @ts-ignore
+  useFetchStreams: false // further prevents WebChannel stream errors
 }, firebaseConfig.firestoreDatabaseId);
 
 const googleProvider = new GoogleAuthProvider();
@@ -32,6 +34,7 @@ export const loginWithGoogle = async () => {
         createdAt: new Date().toISOString(),
         isOnline: true,
         lastActive: new Date().toISOString(),
+        xp: 0
       });
     } else {
       // update last active
