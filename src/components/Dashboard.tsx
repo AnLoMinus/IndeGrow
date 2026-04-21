@@ -5,6 +5,7 @@ import { loginWithGoogle } from '../lib/firebase';
 import { AdminPanel } from './AdminPanel';
 import { Onboarding } from './Onboarding';
 import { TasksWidget } from './TasksWidget';
+import { AIGrowthWidget } from './AIGrowthWidget';
 
 export function Dashboard() {
   const { user, profile } = useAuth();
@@ -74,11 +75,16 @@ export function Dashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         
         {/* Core System Task List using Real Firebase Data */}
         <TasksWidget />
 
+        {/* Real Dynamic AI Response System */}
+        <AIGrowthWidget />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <section className="bg-white p-6 rounded-2xl border shadow-sm relative">
            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
             <Compass className="w-5 h-5 text-slate-600" /> 

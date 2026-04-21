@@ -1,31 +1,39 @@
-# Changelog
+# יומן אירועים וגרסאות (Changelog)
+
+## [0.0.4] - 2026-04-21
+### נוסף (Added)
+- **מנוע צמיחה חכם (AI Growth Engine):** הוטמע חיבור מלא למודל Gemini 2.5 של גוגל באמצעות `@google/genai`.
+- **ווידג'ט המלצות פסיכולוגי:** רכיב ממשק חדש המנתח בזמן אמת את הנתונים, הרמות, והסטטוס של המשתמש. 
+- **תובנות והצעות פעולה:** המערכת מפיקה תובנה אישית (Insight) בעברית ומציעה משימה (IF → THEN). 
+- **אישור מהיר (Accept Task):** הוספת המשימה המוצעת של ה-AI בלחיצת כפתור ישירות אל אוסף המשימות (Firestore).
+- **תרגום המערכת:** יומן האירועים תורגם כולו לשפה העברית כמבוקש.
 
 ## [0.0.3] - 2026-04-21
-### Added
-- **Firebase Connection Fix:** Added `experimentalForceLongPolling` and stream disabling to maintain robust connections in preview mode.
-- **Tasks Widget (`TasksWidget.tsx`):**
-  - Fetches tasks dynamically from Firestore.
-  - Auto-generates starter daily tasks based on categories.
-  - Features a real-time progress bar and success styling.
-- **XP System Base:**
-  - Users now earn `25 XP` per completed task.
-  - New XP status element replaced the mock component in the Dashboard.
+### תוקן (Fixed)
+- **תקשורת שרתים (Firebase WebChannel):** הוגדרה עקיפה להתנתקויות באמצעות `experimentalForceLongPolling` והשהיית זרם, מה ששומר על חיבור קבוע גם בסביבות סגורות (iFrame).
+
+### נוסף (Added)
+- **מערכת ניהול משימות חיה (`TasksWidget.tsx`):**
+  - שליפה וסנכרון תמידי של משימות ממסד הנתונים.
+  - יצירת אוטומטית של משימות בסיס (חימום) למשתמשים שאין בחשבונם משימות פעילות.
+  - סרגל התקדמות ומדדים ויזואליים להצלחה.
+- **מערכת התפתחות (XP System):**
+  - תגמול אוטומטי של 25XP לאחר כל השלמת משימה (הוסדר דרך Firestore Rules).
+  - הצגת מדד ה-XP בזמן אמת בסטטוס הראשי (Dashboard).
 
 ## [0.0.2] - 2026-04-21
-### Added
-- Created `README.md` file featuring project vision and quick links.
-- Added foundational visual artwork assets (4 new inspiration/brand images).
-- Version bumped from 0.0.1 to 0.0.2.
-- Prepared Todo.md to start phase 0.0.2 ("Digital Identity").
+### נוסף (Added)
+- מסמך תצוגת פרויקט מרכזי `README.md` עם חשיפת חזון המערכת וצילומים.
+- הרחבת הלוגיקה החזותית (4 עוגנים עיצוביים המשלבים טכנולוגיה עתידנית ומסורת/שורשיות ישראלית).
+- מערכת **onboardingCompleted** חכמה המציפה שאלון אימות אישי בפעם הראשונה: גילוי מצב פיננסי, תחומי עניין עיקריים, ויציבות הרגלים (הזנקת רמות לפי זהות המשתמש).
+- שדרוג המבנה הפנימי (`firebase-blueprint.json`) לפילוח פרופיל עמוק.
 
 ## [0.0.1] - 2026-04-21
-### Added
-- Setup of IndeGrow OS project.
-- Hebrew support (Direction: RTL).
-- User interface foundation (Header, Navigation, Dashboard).
-- Version tag display with Markdown-rendered Changelog Modal.
-- Todo List viewer Modal.
-- About section (Leon Yaakubov / AnLoMinus).
-- Firebase Authentication (Google Login).
-- Gemini API token usage estimation logic.
-- Initial Firestore security rules integration.
+### נוסף (Added)
+- הקמת מערכת **IndeGrow OS** בסביבת React + Vite.
+- תאימות כוללת בכיווניות השפה מימין לשמאל (RTL).
+- יישום קומפוננטות UI: כותרת, ניווט, ולוח בקרה (Dashboard).
+- חלונות מידע נוחים לקריאת `Todo`, `Changelog`, ו`About` המאמצים רינדור Markdown בזמן אמת.
+- רכיב אימות כניסה דרך חשבון גוגל (Firebase Authentication).
+- רשומות Database והגדרות מודלים התחלתיים עם חוקי אבטחה בסיסיים ב-Firestore.
+- מחשבון הערכת טוקנים (Token Usage) בחלון המשתמש.
