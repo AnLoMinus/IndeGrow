@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Heebo", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    direction: rtl;
+    font-family: var(--font-sans);
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+}
+
+@layer components {
+  .markdown-body h1 {
+    @apply text-2xl font-bold mb-4 mt-6;
+  }
+  .markdown-body h2 {
+    @apply text-xl font-semibold mb-3 mt-5 border-b pb-1;
+  }
+  .markdown-body h3 {
+    @apply text-lg font-medium mb-2 mt-4;
+  }
+  .markdown-body p {
+    @apply mb-4 leading-relaxed;
+  }
+  .markdown-body ul {
+    @apply list-disc list-inside mb-4 pr-5;
+  }
+  .markdown-body ol {
+    @apply list-decimal list-inside mb-4 pr-5;
+  }
+  .markdown-body li {
+    @apply mb-1;
+  }
+  .markdown-body input[type="checkbox"] {
+    @apply ml-2 w-4 h-4 text-blue-600 rounded border-gray-300;
+  }
+  /* Remove list styling if list item has checkbox inside (task list) */
+  .markdown-body li:has(input[type="checkbox"]) {
+    @apply list-none;
+  }
+}

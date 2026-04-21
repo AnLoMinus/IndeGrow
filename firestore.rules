@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+
+    match /users/{userId} {
+      function isValidUser(data) {
+        return data.size() >= 4 
+          && data.keys().hasAll(['email', 'role', 'tokenBalance', 'createdAt'])
+          && data.email is string && data.email.size() <= 256
+          && data.role in ['user', 'admin']
+          && data.tokenBalance is number
+          && data.createdAt is string;
+      }
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(userId) && isOwner(userId)
+                    && isValidUser(incoming())
+                    && incoming().role == 'user'; // cannot self-assign admin
+      allow update: if isValidId(userId) && (isOwner(userId) || isAdmin())
+                    && isValidUser(incoming())
+                    && (isAdmin() || incoming().role == existing().role); // only admin can change role
+    }
+
+    match /chat_sessions/{sessionId} {
+      function isValidSession(data) {
+        return data.size() >= 4
+          && data.keys().hasAll(['userId', 'title', 'createdAt', 'updatedAt'])
+          && data.userId is string && data.userId == request.auth.uid
+          && data.title is string && data.title.size() <= 200
+          && data.createdAt is string
+          && data.updatedAt is string;
+      }
+      allow read: if isValidId(sessionId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid || isAdmin();
+      allow create: if isValidId(sessionId) && isSignedIn() && isValidSession(incoming());
+      allow update: if isValidId(sessionId) && isOwner(existing().userId) && isValidSession(incoming());
+      allow delete: if isValidId(sessionId) && (isOwner(existing().userId) || isAdmin());
+    }
+
+    match /messages/{messageId} {
+      function isValidMessage(data) {
+        return data.size() >= 6
+          && data.keys().hasAll(['userId', 'sessionId', 'role', 'content', 'tokensUsed', 'createdAt'])
+          && data.userId is string && data.userId == request.auth.uid
+          && data.sessionId is string
+          && data.role in ['user', 'model', 'system']
+          && data.content is string
+          && data.tokensUsed is number
+          && data.createdAt is string;
+      }
+      allow read: if isValidId(messageId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid || isAdmin();
+      allow create: if isValidId(messageId) && isSignedIn() && isValidMessage(incoming());
+      // Messages are immutable once created
+      allow update, delete: if isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      function isValidTask(data) {
+        return data.size() >= 5
+          && data.keys().hasAll(['userId', 'title', 'category', 'isCompleted', 'createdAt'])
+          && data.userId is string && data.userId == request.auth.uid
+          && data.title is string && data.title.size() <= 200
+          && data.category is string && data.category.size() <= 100
+          && data.isCompleted is bool
+          && data.createdAt is string;
+      }
+      allow read: if isValidId(taskId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid || isAdmin();
+      allow create: if isValidId(taskId) && isSignedIn() && isValidTask(incoming());
+      allow update: if isValidId(taskId) && isOwner(existing().userId) && isValidTask(incoming());
+      allow delete: if isValidId(taskId) && isOwner(existing().userId);
+    }
+
+    match /finances/{financeId} {
+      function isValidFinance(data) {
+        return data.size() >= 6
+          && data.keys().hasAll(['userId', 'type', 'amount', 'category', 'date', 'createdAt'])
+          && data.userId is string && data.userId == request.auth.uid
+          && data.type in ['income', 'expense']
+          && data.amount is number
+          && data.category is string && data.category.size() <= 100
+          && data.date is string
+          && data.createdAt is string;
+      }
+      allow read: if isValidId(financeId) && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid || isAdmin();
+      allow create: if isValidId(financeId) && isSignedIn() && isValidFinance(incoming());
+      allow update: if isValidId(financeId) && isOwner(existing().userId) && isValidFinance(incoming());
+      allow delete: if isValidId(financeId) && isOwner(existing().userId);
+    }
+  }
+}
